@@ -1,0 +1,53 @@
+from plugins.base import BasePlugin, _builtin_plugins
+import iv8
+
+
+class CanvasPlugin(BasePlugin):
+    name = "canvas"
+    dependencies = []
+
+    def apply(self, ctx: iv8.JSContext, config: dict):
+        fp = config.get("canvas_fp", "data:image/png;base64,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")
+        ctx.eval(f"""
+            HTMLCanvasElement.prototype.toDataURL = function(type) {{ return '{fp}'; }};
+            HTMLCanvasElement.prototype.getContext = function(type) {{
+                return {{
+                    canvas: this,
+                    fillRect: function() {{}},
+                    clearRect: function() {{}},
+                    getImageData: function(x, y, w, h) {{
+                        return {{ data: new Uint8ClampedArray(w * h * 4), width: w, height: h }};
+                    }},
+                    putImageData: function() {{}},
+                    createImageData: function(w, h) {{ return {{ data: [] }}; }},
+                    setTransform: function() {{}},
+                    drawImage: function() {{}},
+                    save: function() {{}},
+                    fill: function() {{}},
+                    restore: function() {{}},
+                    beginPath: function() {{}},
+                    moveTo: function() {{}},
+                    lineTo: function() {{}},
+                    closePath: function() {{}},
+                    stroke: function() {{}},
+                    translate: function() {{}},
+                    scale: function() {{}},
+                    rotate: function() {{}},
+                    arc: function() {{}},
+                    fillText: function() {{}},
+                    strokeText: function() {{}},
+                    measureText: function(text) {{
+                        return {{ width: text.length * 8 }};
+                    }},
+                    createLinearGradient: function() {{
+                        return {{ addColorStop: function() {{}} }};
+                    }},
+                    createRadialGradient: function() {{
+                        return {{ addColorStop: function() {{}} }};
+                    }},
+                }};
+            }};
+        """)
+
+
+_builtin_plugins.append(CanvasPlugin())

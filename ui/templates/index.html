@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RS8 - 瑞数通杀</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div class="app">
+  <header>
+    <h1>RS8 <span class="subtitle">瑞数 Cookie 生成器</span></h1>
+    <div class="status-badge" id="statusBadge">就绪</div>
+  </header>
+
+  <main>
+    <section class="input-section card">
+      <div class="form-row">
+        <input type="url" id="urlInput" placeholder="输入目标 URL，例如 https://www.ouyeel.com/steel/search?" autofocus>
+        <select id="profileSelect">
+          <option value="chrome_136">Chrome 136</option>
+          <option value="chrome_124">Chrome 124</option>
+        </select>
+        <button id="goBtn" onclick="start()">生成 Cookie</button>
+      </div>
+      <div class="quick-urls">
+        <span>快速: </span>
+        <button class="tag" data-url="https://www.ouyeel.com/steel/search?">欧冶</button>
+      </div>
+    </section>
+
+    <section class="result-section card" id="resultSection" style="display:none">
+      <div class="result-header">
+        <span class="result-status" id="resultStatus">✅ 成功</span>
+        <span class="result-meta" id="resultMeta"></span>
+      </div>
+      <div class="cookie-box">
+        <div class="label">Cookie</div>
+        <textarea id="cookieText" readonly rows="2"></textarea>
+        <div class="btn-row">
+          <button class="copy-btn" onclick="copyText('cookieText')">复制 Cookie</button>
+          <button class="copy-btn" onclick="copyText('curlText')">复制 Curl</button>
+        </div>
+      </div>
+      <div class="curl-box">
+        <div class="label">cURL 命令</div>
+        <textarea id="curlText" readonly rows="2"></textarea>
+      </div>
+    </section>
+
+    <section class="log-section card">
+      <div class="log-header">
+        <span class="label">执行日志</span>
+        <button class="clear-btn" onclick="clearLogs()">清空</button>
+      </div>
+      <div id="logContainer" class="log-container"></div>
+    </section>
+  </main>
+</div>
+
+<script src="/static/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,114 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background: #0f172a;
+  color: #e2e8f0;
+  min-height: 100vh;
+}
+
+.app { max-width: 900px; margin: 0 auto; padding: 24px 16px; }
+
+header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+h1 { font-size: 24px; font-weight: 700; color: #38bdf8; }
+.subtitle { font-size: 14px; font-weight: 400; color: #94a3b8; margin-left: 8px; }
+
+.status-badge {
+  font-size: 12px; padding: 4px 12px; border-radius: 20px;
+  background: #1e293b; color: #94a3b8; border: 1px solid #334155;
+}
+.status-badge.running { background: #1e3a5f; color: #60a5fa; border-color: #3b82f6; }
+.status-badge.done { background: #064e3b; color: #34d399; border-color: #059669; }
+.status-badge.error { background: #450a0a; color: #f87171; border-color: #dc2626; }
+
+.card {
+  background: #1e293b; border: 1px solid #334155; border-radius: 12px;
+  padding: 20px; margin-bottom: 16px;
+}
+
+.form-row { display: flex; gap: 8px; }
+
+#urlInput {
+  flex: 1; padding: 10px 14px; font-size: 14px;
+  background: #0f172a; border: 1px solid #334155; border-radius: 8px;
+  color: #e2e8f0; outline: none; transition: border-color .2s;
+}
+#urlInput:focus { border-color: #3b82f6; }
+#urlInput::placeholder { color: #475569; }
+
+#profileSelect {
+  padding: 10px; font-size: 14px;
+  background: #0f172a; border: 1px solid #334155; border-radius: 8px;
+  color: #e2e8f0; cursor: pointer; outline: none;
+}
+
+#goBtn {
+  padding: 10px 24px; font-size: 14px; font-weight: 600;
+  background: #2563eb; color: #fff; border: none; border-radius: 8px;
+  cursor: pointer; white-space: nowrap; transition: background .15s;
+}
+#goBtn:hover { background: #1d4ed8; }
+#goBtn:disabled { opacity: .5; cursor: not-allowed; }
+
+.quick-urls { margin-top: 12px; display: flex; align-items: center; gap: 6px; font-size: 13px; color: #64748b; }
+.tag {
+  padding: 2px 10px; border-radius: 12px; border: 1px solid #334155;
+  background: transparent; color: #94a3b8; font-size: 12px; cursor: pointer;
+}
+.tag:hover { border-color: #3b82f6; color: #60a5fa; }
+
+.result-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+.result-status { font-weight: 600; font-size: 15px; }
+.result-meta { font-size: 13px; color: #64748b; }
+
+.label { font-size: 12px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 6px; }
+
+textarea {
+  width: 100%; padding: 10px 12px; font-size: 13px; font-family: "JetBrains Mono", "Cascadia Code", "Fira Code", monospace;
+  background: #0f172a; border: 1px solid #334155; border-radius: 8px;
+  color: #e2e8f0; resize: vertical; outline: none;
+}
+textarea:focus { border-color: #3b82f6; }
+textarea::selection { background: #3b82f6; color: #fff; }
+
+.btn-row { display: flex; gap: 8px; margin-top: 8px; }
+.copy-btn {
+  padding: 6px 16px; font-size: 13px;
+  background: #334155; color: #e2e8f0; border: none; border-radius: 6px;
+  cursor: pointer; transition: background .15s;
+}
+.copy-btn:hover { background: #475569; }
+.copy-btn.copied { background: #059669; }
+
+.cookie-box, .curl-box { margin-bottom: 12px; }
+.curl-box textarea { color: #a5b4fc; }
+
+.log-header { display: flex; justify-content: space-between; align-items: center; }
+
+.clear-btn {
+  padding: 4px 12px; font-size: 12px;
+  background: transparent; color: #64748b; border: 1px solid #334155; border-radius: 6px;
+  cursor: pointer;
+}
+.clear-btn:hover { color: #f87171; border-color: #f87171; }
+
+.log-container {
+  max-height: 300px; overflow-y: auto; margin-top: 8px;
+  font-size: 13px; font-family: "JetBrains Mono", "Cascadia Code", "Fira Code", monospace;
+  line-height: 1.6;
+}
+.log-container::-webkit-scrollbar { width: 4px; }
+.log-container::-webkit-scrollbar-track { background: transparent; }
+.log-container::-webkit-scrollbar-thumb { background: #334155; border-radius: 2px; }
+
+.log-line { padding: 2px 0; color: #94a3b8; }
+.log-line.info { color: #60a5fa; }
+.log-line.warn { color: #fbbf24; }
+.log-line.error { color: #f87171; }
+.log-line.success { color: #34d399; }
+
+.log-line .ts { color: #475569; margin-right: 8px; }
