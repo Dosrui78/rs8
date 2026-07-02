@@ -62,7 +62,7 @@ class RS6Adapter(BaseAdapter):
                 }};
 
                 var _script = {{
-                    getAttribute: function(k) {{ if (k === 'r') return META_R; return null; }},
+                    getAttribute: function(k) {{ if (k === 'r') return META_R; if (k === 'src') return '{data.auto_script_url}'; return null; }},
                     parentElement: _head,
                     parentNode: _head,
                     src: '{data.auto_script_url}',
@@ -105,6 +105,24 @@ class RS6Adapter(BaseAdapter):
                 document.attachEvent = function() {{}};
             """)
         logs.append("  DOM patches injected")
+
+        # 1b. iv8 String.prototype.slice workaround
+        # iv8 throws "called on null or undefined" in certain obfuscated calling
+        # patterns even when |this| is valid. Wrapping via .call() works around it.
+        ctx.eval("""
+            (function(){
+                var _orig_slice = String.prototype.slice;
+                String.prototype.slice = function(a, b) {
+                    if (this == null) return '';
+                    return _orig_slice.call(this, a, b);
+                };
+                var _orig_aslice = Array.prototype.slice;
+                Array.prototype.slice = function(a, b) {
+                    if (this == null) return [];
+                    return _orig_aslice.call(this, a, b);
+                };
+            })();
+        """)
 
         # 2. page.load
         logs.append("  page.load...")

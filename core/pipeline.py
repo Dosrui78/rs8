@@ -140,12 +140,19 @@ class Pipeline:
                 return result
 
             result.success = True
-            result.cookie = cookie_str
+
+            # merge session cookies (server-set e.g. 6HZbKHDjIEcgS) with
+            # generated cookies (client-side e.g. 6HZbKHDjIEcgT)
+            session_cookies = dict(self.session.cookies)
+            all_cookies = {}
+            all_cookies.update(session_cookies)
             for item in cookie_str.split(";"):
                 item = item.strip()
                 if "=" in item:
                     k, v = item.split("=", 1)
-                    result.cookie_dict[k.strip()] = v.strip()
+                    all_cookies[k.strip()] = v.strip()
+            result.cookie_dict = all_cookies
+            result.cookie = "; ".join(f"{k}={v}" for k, v in all_cookies.items())
 
         except Exception as e:
             result.error = str(e)
