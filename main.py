@@ -1,6 +1,7 @@
 import uvicorn
 from api.server import app
 from config import settings
+from core.curl import format_curl
 
 
 def main():
@@ -12,7 +13,8 @@ def main():
         result = p.run(url)
         if result.success:
             print(f"\nCookie: {result.cookie}")
-            print(f"Curl: curl '{url}' -H 'cookie: {result.cookie}'")
+            print()
+            print(format_curl(url, result.cookie))
         else:
             print(f"Failed: {result.error}")
         return

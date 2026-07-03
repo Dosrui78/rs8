@@ -3,6 +3,7 @@ import os
 from fastapi import APIRouter, HTTPException
 from api.models import BypassRequest, BypassResponse
 from core.pipeline import Pipeline, PipelineConfig
+from core.curl import format_curl
 
 router = APIRouter()
 
@@ -29,8 +30,7 @@ async def bypass(req: BypassRequest):
     )
 
     if result.success:
-        ua = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
-        resp.curl = f"curl '{req.url}' -H 'cookie: {result.cookie}' -H 'user-agent: {ua}'"
+        resp.curl = format_curl(req.url, result.cookie)
 
     return resp
 
