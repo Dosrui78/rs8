@@ -1,9 +1,0 @@
-{
-  "skills": [
-    {
-      "name": "rs8",
-      "description": "RS8 瑞数通杀框架 — 基于 iv8 的通用瑞数绕过。含架构、用法、开发指南。",
-      "location": ".opencode/skills/rs8/skill.md"
-    }
-  ]
-}

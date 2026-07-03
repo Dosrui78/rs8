@@ -75,7 +75,7 @@ textarea {
 textarea:focus { border-color: #3b82f6; }
 textarea::selection { background: #3b82f6; color: #fff; }
 
-.btn-row { display: flex; gap: 8px; margin-top: 8px; }
+.btn-row { display: flex; gap: 8px; margin-top: 4px; }
 .copy-btn {
   padding: 6px 16px; font-size: 13px;
   background: #334155; color: #e2e8f0; border: none; border-radius: 6px;
