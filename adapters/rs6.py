@@ -11,104 +11,13 @@ class RS6Adapter(BaseAdapter):
     def execute(self, ctx: iv8.JSContext, data: ExtractedData, logs: list) -> str:
         meta_c = data.meta_content
         meta_r = data.meta_r or "m"
+        meta_id = data.meta_id
+        ts_js = data.ts_js
+        auto_script_js = data.auto_script_js
+        auto_script_url = data.auto_script_url
+        base_url = auto_script_url.rsplit("/", 1)[0] if auto_script_url else ""
 
-        # 1. set globals that hooks may reference (e.g. META_CONTENT, META_R)
-        ctx.eval(f"""
-            var META_CONTENT = '{meta_c}';
-            var META_R = '{meta_r}';
-        """)
-
-        # 1a. inject recipe hooks if present (site-specific DOM patches)
-        if data.extra_hooks:
-            logs.append(f"  injecting {len(data.extra_hooks)} recipe hooks...")
-            for i, hook in enumerate(data.extra_hooks):
-                try:
-                    ctx.eval(hook)
-                    logs.append(f"  hook[{i}] injected ({len(hook)} chars)")
-                except Exception as e:
-                    logs.append(f"  hook[{i}] error: {e}")
-        else:
-            # fallback generic DOM patches
-            logs.append("  injecting generic DOM patches...")
-            ctx.eval(f"""
-                // --- self = top = window ---
-                self = top = window;
-
-                // --- timer mocks ---
-                window.setInterval = function() {{ return 0; }};
-                window.setTimeout = function() {{ return 0; }};
-                window.clearTimeout = function() {{}};
-                window.clearInterval = function() {{}};
-                window.addEventListener = function() {{}};
-                window.ActiveXObject = undefined;
-                window.attachEvent = function() {{}};
-
-                // --- XHR ---
-                var XMLHttpRequest = function XMLHttpRequest() {{}};
-                XMLHttpRequest.prototype.open = function() {{}};
-                XMLHttpRequest.prototype.send = function() {{}};
-                XMLHttpRequest.prototype.setRequestHeader = function() {{}};
-                XMLHttpRequest.prototype.abort = function() {{}};
-                XMLHttpRequest.prototype.getResponseHeader = function() {{ return null; }};
-
-                // --- HTML elements ---
-                window.HTMLFormElement = function() {{}};
-                window.HTMLAnchorElement = function() {{}};
-
-                var _head = {{
-                    removeChild: function(el) {{}},
-                    appendChild: function(el) {{ return el; }},
-                    insertBefore: function(el, ref) {{ return el; }}
-                }};
-
-                var _script = {{
-                    getAttribute: function(k) {{ if (k === 'r') return META_R; if (k === 'src') return '{data.auto_script_url}'; return null; }},
-                    parentElement: _head,
-                    parentNode: _head,
-                    src: '{data.auto_script_url}',
-                    type: 'text/javascript'
-                }};
-
-                var _meta = {{
-                    getAttribute: function(k) {{ if (k === 'r') return META_R; return null; }},
-                    parentNode: _head,
-                    content: META_CONTENT
-                }};
-
-                var _div = {{ getElementsByTagName: function(t) {{ return []; }} }};
-                var _form = {{}};
-                var _input = {{}};
-
-                document.createElement = function(tag) {{
-                    if (tag === 'div') return _div;
-                    if (tag === 'form') return _form;
-                    if (tag === 'input') return _input;
-                    if (tag === 'script') return {{}};
-                    return {{}};
-                }};
-                document.appendChild = function(el) {{}};
-                document.removeChild = function(el) {{}};
-                document.getElementsByTagName = function(tag) {{
-                    if (tag === 'script') return [_script, _script];
-                    if (tag === 'meta') return [_meta, _meta];
-                    if (tag === 'head') return [_head];
-                    return [];
-                }};
-                document.getElementById = function(id) {{
-                    if (id === 'root-hammerhead-shadow-ui') return null;
-                    return null;
-                }};
-                document.addEventListener = function() {{}};
-                document.documentElement = document.body = document;
-                document.querySelector = function(s) {{ return null; }};
-                document.querySelectorAll = function(s) {{ return []; }};
-                document.attachEvent = function() {{}};
-            """)
-        logs.append("  DOM patches injected")
-
-        # 1b. iv8 String.prototype.slice workaround
-        # iv8 throws "called on null or undefined" in certain obfuscated calling
-        # patterns even when |this| is valid. Wrapping via .call() works around it.
+        # 1. slice fix
         ctx.eval("""
             (function(){
                 var _orig_slice = String.prototype.slice;
@@ -124,37 +33,42 @@ class RS6Adapter(BaseAdapter):
             })();
         """)
 
-        # 2. page.load
-        logs.append("  page.load...")
-        ctx.eval(f"""
-            window.__iv8__.page.load({{ baseURL: '{data.auto_script_url}' }});
-        """)
+        # 2. page.load with full HTML (let iv8's native DOM engine handle everything)
+        #    Build a page equivalent to the actual RS challenge page
+        meta_tag = f'<meta id="{meta_id}" content="{meta_c}" r="{meta_r}">' if meta_id else f'<meta content="{meta_c}" r="{meta_r}">'
+        html = f"""<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+{meta_tag}
+<script r='{meta_r}'>{ts_js}</script>
+<script src="{auto_script_url}"></script>
+</head>
+<body></body>
+</html>"""
 
-        # 3. ts_js
-        if data.ts_js:
-            logs.append(f"  executing ts_js ({len(data.ts_js)} chars)...")
-            try:
-                ctx.eval(data.ts_js)
-                ctx.eval("window.__iv8__.eventLoop.drainMicrotasks()")
-                logs.append("  ts_js ok")
-            except Exception as e:
-                logs.append(f"  ts_js warn: {e}")
+        resources = {}
+        if auto_script_js:
+            resources[auto_script_url] = auto_script_js
 
-        # 4. auto_script
-        if data.auto_script_js:
-            logs.append(f"  executing auto_script ({len(data.auto_script_js)} chars)...")
-            try:
-                ctx.eval(data.auto_script_js)
-                ctx.eval("window.__iv8__.eventLoop.drainMicrotasks()")
-                logs.append("  auto_script ok")
-            except Exception as e:
-                logs.append(f"  auto_script warn: {e}")
+        logs.append("  page.load with native DOM...")
+        try:
+            ctx.eval(f"""
+                window.__iv8__.page.load({{
+                    baseURL: '{auto_script_url}',
+                    html: {repr(html)},
+                    resources: {repr(resources)}
+                }});
+            """)
+            logs.append("  page.load ok")
+        except Exception as e:
+            logs.append(f"  page.load warn: {e}")
 
-        # 5. wait for async cookies
+        # 3. wait for cookie generation
         logs.append("  waiting for event loop (3s)...")
         ctx.eval("window.__iv8__.eventLoop.sleep(3000)")
 
-        # 6. read cookie
+        # 4. read cookie
         cookie = ctx.eval("document.cookie") or ""
         return cookie
 

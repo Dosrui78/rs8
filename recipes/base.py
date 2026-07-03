@@ -7,6 +7,7 @@ class Recipe:
     """站点配方：覆盖自动检测/适配的逻辑"""
     domain: str                          # 匹配域名，如 "www.ouyeel.com"
     version_hint: str = ""               # 强制指定版本
+    max_rounds: int = 1                  # 需几轮 RS 解密（cebwm 要 2 轮）
     before_exec_hooks: list[str] = field(default_factory=list)   # ts_js 执行前注入的 JS
     after_exec_hooks: list[str] = field(default_factory=list)    # ts_js 执行后注入的 JS
     profile_overrides: dict = field(default_factory=dict)        # 覆盖指纹配置

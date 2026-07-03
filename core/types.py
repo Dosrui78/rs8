@@ -11,6 +11,7 @@ class ExtractedData:
     ts_js: str = ""
     auto_script_url: str = ""
     auto_script_js: str = ""
+    meta_id: str = ""  # meta 标签的 id 属性（部分站点校验依赖）
     features: dict = field(default_factory=dict)
     extra_hooks: list[str] = field(default_factory=list)  # recipe hooks
 
