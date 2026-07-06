@@ -5,7 +5,7 @@
 ## 安装
 
 ```bash
-pip install -e .
+uv sync
 ```
 
 ## 使用
