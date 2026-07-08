@@ -20,7 +20,7 @@ def main():
         return
 
     print(f"RS8 starting on http://{settings.HOST}:{settings.PORT}")
-    print("Open http://localhost:8080 in browser")
+    print("Open http://localhost:3333 in browser")
     uvicorn.run(app, host=settings.HOST, port=settings.PORT, log_level="info")
 
 

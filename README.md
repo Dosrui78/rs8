@@ -16,7 +16,7 @@ uv sync
 python main.py
 ```
 
-打开 `http://127.0.0.1:8080` 使用 Web UI。
+打开 `http://127.0.0.1:3333` 使用 Web UI。
 
 ### CLI 模式
 
@@ -29,7 +29,7 @@ python main.py --cli
 ### REST API
 
 ```bash
-curl -X POST http://localhost:8080/api/bypass \
+curl -X POST http://localhost:3333/api/bypass \
   -H "Content-Type: application/json" \
   -d '{"url": "https://example.com/protected/page"}'
 ```
@@ -85,5 +85,5 @@ recipe = Recipe(
 | 参数 | 默认值 | 说明 |
 |------|--------|------|
 | `HOST` | `127.0.0.1` | 监听地址 |
-| `PORT` | `8080` | 端口 |
+| `PORT` | `3333` | 端口 |
 | `REQUEST_TIMEOUT` | `30` | 超时秒数 |

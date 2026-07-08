@@ -41,7 +41,7 @@ rs8/
 
 ```bash
 # Web UI
-python main.py          → http://localhost:8080
+python main.py          → http://localhost:3333
 
 # CLI 模式
 python main.py --cli <url>
